@@ -2,7 +2,7 @@
 #define _SHAPEFILE_H_INCLUDED
 
 /******************************************************************************
- * $Id: shapefil.h,v 1.1 2004/09/20 17:22:55 robertl Exp $
+ * $Id: shapefil.h,v 1.2 2004/09/27 01:13:58 robertl Exp $
  *
  * Project:  Shapelib
  * Purpose:  Primary include file for Shapelib.
@@ -37,6 +37,9 @@
  ******************************************************************************
  *
  * $Log: shapefil.h,v $
+ * Revision 1.2  2004/09/27 01:13:58  robertl
+ * warning fixes in shapelib.  From Alexander Stohr.
+ *
  * Revision 1.1  2004/09/20 17:22:55  robertl
  * Bring in shapefil.h.
  *
@@ -299,11 +302,11 @@ void SHPAPI_CALL
 SHPObject SHPAPI_CALL1(*)
       SHPCreateObject( int nSHPType, int nShapeId,
                        int nParts, int * panPartStart, int * panPartType,
-                       int nVertices, double * padfX, double * padfY,
-                       double * padfZ, double * padfM );
+                       int nVertices, const double * padfX, const double * padfY,
+                       const double * padfZ, const double * padfM );
 SHPObject SHPAPI_CALL1(*)
       SHPCreateSimpleObject( int nSHPType, int nVertices,
-                             double * padfX, double * padfY, double * padfZ );
+                             const double * padfX, const double * padfY, const double * padfZ );
 
 int SHPAPI_CALL
       SHPRewindObject( SHPHandle hSHP, SHPObject * psObject );
