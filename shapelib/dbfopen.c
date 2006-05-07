@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: dbfopen.c,v 1.1 2004/09/20 17:21:22 robertl Exp $
+ * $Id: dbfopen.c,v 1.2 2006/05/07 02:14:35 robertl Exp $
  *
  * Project:  Shapelib
  * Purpose:  Implementation of .dbf access API documented in dbf_api.html.
@@ -34,6 +34,9 @@
  ******************************************************************************
  *
  * $Log: dbfopen.c,v $
+ * Revision 1.2  2006/05/07 02:14:35  robertl
+ * Make shapefile and all palm pdb formats deselectable at build time.
+ *
  * Revision 1.1  2004/09/20 17:21:22  robertl
  * Check in shapelib and experimental prototype of crude shapefile support.
  *
@@ -186,9 +189,12 @@
  */
 
 static char rcsid[] = 
-  "$Id: dbfopen.c,v 1.1 2004/09/20 17:21:22 robertl Exp $";
+  "$Id: dbfopen.c,v 1.2 2006/05/07 02:14:35 robertl Exp $";
 
 #include "shapefil.h"
+#include "config.h"
+
+#if SHAPELIB_ENABLED
 
 #include <math.h>
 #include <stdlib.h>
@@ -1496,3 +1502,4 @@ DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName)
     }
     return(-1);
 }
+#endif
