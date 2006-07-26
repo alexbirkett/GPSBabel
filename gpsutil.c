@@ -30,7 +30,7 @@ static short_handle mkshort_handle;
 static void
 rd_init(const char *fname)
 {
-	file_in = xfopen(fname, "rb", MYNAME);
+	file_in = xfopen(fname, "r", MYNAME);
 }
 
 static void
@@ -56,7 +56,7 @@ wr_deinit(void)
 static void
 data_read(void)
 {
-	char *ibuf;
+	char ibuf[100];
 	char name[9], desc[31];
 	double lat,lon;
 	char latdir, londir;
@@ -65,25 +65,22 @@ data_read(void)
 	char alttype;
 	char icon[3] = {0};
 	waypoint *wpt_tmp;
-	textfile_t *tin;
 	/*
 	 * Make sure that all waypoints in single read have same 
 	 * timestamp.
 	 */
 	time_t now = current_time();
-	
-	tin = textfile_init(file_in);
 
-	while ((ibuf = textfile_read(tin))) {
+
+	for(;fgets(ibuf, sizeof(ibuf), file_in);) {
 		int n;
 	/*  A sharp in column zero or an blank line is a comment */
-		ibuf = lrtrim(ibuf);
 		if (ibuf[0] == '#' || ibuf[0] == '\n') continue;
 		n = sscanf(ibuf, "%s %le%c %le%c %ld%c %30[^,] %c",
 			name, &lat, &latdir, &lon, &londir,
 			&alt, &alttype, desc, icon);
 		/* Require at least first threee fields, otherwise ignore */
-		if (n < 3) { 
+		if (n < 3) {
 			continue;
 		}
 		desc[0] = '\0';
@@ -110,7 +107,6 @@ data_read(void)
 		wpt_tmp->icon_descr = mag_find_descr_from_token(icon);
 		waypt_add(wpt_tmp);
 	}
-	textfile_done(tin);
 }
 
 static void

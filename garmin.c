@@ -150,7 +150,6 @@ rw_init(const char *fname)
 					receiver_charset = CET_CHARSET_MS_ANSI;
 					break;
 				case 231: /* Quest */
-				case 463: /* Quest 2 */
 					receiver_must_upper = 0;
 					receiver_short_length = 30;
 					receiver_charset = CET_CHARSET_MS_ANSI;
@@ -365,11 +364,7 @@ route_read(void)
 	int32 nroutepts;
 	int i;
 	GPS_PWay *array;
-    /* TODO: Fixes warning but is it right? 
-     * RJL:  No, the warning isn't right; GCC's flow analysis is broken.
-     * still, it's good taste...
-     */
-    route_head *rte_head = NULL;
+  route_head *rte_head;
 
 	nroutepts = GPS_Command_Get_Route(portname, &array);
 
@@ -386,11 +381,11 @@ route_read(void)
 				case 202: csrc = array[i]->rte_ident; break;
 				default: break;
 			}
-            rte_head = route_head_alloc();
-            route_add_head(rte_head);
-            if (csrc) {
-                rte_head->rte_name = xstrdup(csrc);
-            }
+      rte_head = route_head_alloc();
+      route_add_head(rte_head);
+      if (csrc) {
+        rte_head->rte_name = xstrdup(csrc);
+      }
 		} else { 
 			if (array[i]->islink)  {
 				continue; 
@@ -533,15 +528,19 @@ waypoint_write(void)
 		}
 		way[i]->ident[sizeof(way[i]->ident)-1] = 0;
 
+#define CL(b) strlen(b) > sizeof(way[i]->cmnt) ? \
+	sizeof(way[i]->cmnt) : \
+	strlen(b)
+
 		if (!global_opts.no_smart_icons && 
 		     wpt->gc_data.diff && wpt->gc_data.terr) {
 	                snprintf(obuf, sizeof(obuf), "%s%d/%d %s", 
 					get_gc_info(wpt),
 					wpt->gc_data.diff, wpt->gc_data.terr, 
 					src);
-			memcpy(way[i]->cmnt, obuf, strlen(obuf));
+			memcpy(way[i]->cmnt, obuf, CL(obuf));
 		} else  {
-			memcpy(way[i]->cmnt, src, strlen(src));
+			memcpy(way[i]->cmnt, src, CL(src));
 		}
 		way[i]->lon = wpt->longitude;
 		way[i]->lat = wpt->latitude;

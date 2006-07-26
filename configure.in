@@ -23,10 +23,6 @@ AC_CHECK_LIB([m], [cos])
 AC_ARG_WITH(cet,[  --with-cet=(default,all,minimal)],
              cet="$withval", cet="default")
 
-if test $GCC = yes; then
- CFLAGS="$CFLAGS -Wall"
-fi
-
 if test "$cet" = "all"; then
    AC_DEFINE(CET_WANTED, 1, [1 for all character sets])
 fi
@@ -67,7 +63,7 @@ AC_ARG_ENABLE(csv,
 	AC_MSG_RESULT(no)
     fi
 
-AC_MSG_CHECKING(whether to support filters)
+AC_MSG_CHECKING(whether to support csv formats)
 AC_ARG_ENABLE(filters,
   [  --enable-filters=[(yes)|no]],
   [ enable_filters="$enableval"],[enable_filters="yes"])

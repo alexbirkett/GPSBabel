@@ -55,7 +55,7 @@ maggeo_rd_deinit(void)
 static void
 maggeo_wr_init(const char *fname)
 {
-	if (waypt_count() > 200) {
+	if (waypt_count() >= 200) {
 		fatal(MYNAME ": eXplorist does not support more than 200 waypoints in one .gs file.\nDecrease the number of waypoints sent.\n");
 	}
 	maggeofile_out = xfopen(fname, "wb", MYNAME);
@@ -174,7 +174,8 @@ maggeo_waypt_pr(const waypoint *waypointp)
 	}
 	placeddate = maggeo_fmtdate(waypointp->creation_time);
 	lfounddate = maggeo_fmtdate(waypointp->gc_data.last_found);
-	cname = mkshort(desc_handle, waypointp->notes ? waypointp->notes : waypointp->shortname);
+
+	cname = mkshort(desc_handle, waypointp->notes ? waypointp->notes : waypointp->description ? waypointp->description : waypointp->shortname);
 	placer = waypointp->gc_data.placer;
 
 	/*

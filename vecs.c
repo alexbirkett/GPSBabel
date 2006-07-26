@@ -106,8 +106,7 @@ extern ff_vecs_t vitosmt_vecs;
 extern ff_vecs_t wfff_xml_vecs;
 extern ff_vecs_t xcsv_vecs;
 extern ff_vecs_t yahoo_vecs;
-extern ff_vecs_t wbt_svecs;
-extern ff_vecs_t wbt_fvecs;
+extern ff_vecs_t wbt_vecs;
 
 static
 vecs_t vec_list[] = {
@@ -383,15 +382,9 @@ vecs_t vec_list[] = {
                 NULL
         },
         {
-                &wbt_svecs,
+                &wbt_vecs,
                 "wbt",
                 "Wintec WBT-100/200 GPS Download",
-                "bin"
-        },
-        {
-                &wbt_fvecs,
-                "wbt-bin",
-                "Wintec WBT-100/200 Binary file format",
                 NULL
         },
         {
@@ -843,7 +836,7 @@ get_option(const char *iarglist, const char *argname)
 	arglen = strlen(argname);
 	arglist = xstrdup(iarglist);
 
-	for (arg = arglist; argp = strtok(arg, ","), NULL != argp; arg = NULL) {
+	for (arg = arglist; argp = strtok(arg, ","); arg = NULL) {
 		if (0 == case_ignore_strncmp(argp, argname, arglen)) {
 			/*
 			 * If we have something of the form "foo=bar"
