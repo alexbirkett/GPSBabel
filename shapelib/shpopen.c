@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: shpopen.c,v 1.4 2006/07/13 03:27:54 robertl Exp $
+ * $Id: shpopen.c,v 1.5 2006/11/24 21:55:52 oliskoli Exp $
  *
  * Project:  Shapelib
  * Purpose:  Implementation of core Shapefile read/write functions.
@@ -34,6 +34,9 @@
  ******************************************************************************
  *
  * $Log: shpopen.c,v $
+ * Revision 1.5  2006/11/24 21:55:52  oliskoli
+ * Remove (shpopen) warning on FreeBSD.
+ *
  * Revision 1.4  2006/07/13 03:27:54  robertl
  * Andy Armstrong turns on -Wall for GCC builds and kills about a sequillion warnings.  Most of them aren't "real", but it's still a good thing to clean up.
  * (I hope I don't regret this before 1.3.1...)
@@ -172,7 +175,7 @@
  */
 
 /*static char rcsid[] = 
-  "$Id: shpopen.c,v 1.4 2006/07/13 03:27:54 robertl Exp $";*/
+  "$Id: shpopen.c,v 1.5 2006/11/24 21:55:52 oliskoli Exp $";*/
 
 #include "shapefil.h"
 #include "config.h"
@@ -933,6 +936,7 @@ SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject )
     uchar	*pabyRec;
     int32	i32;
 
+    nRecordSize = 0;
     psSHP->bUpdated = TRUE;
 
 /* -------------------------------------------------------------------- */
