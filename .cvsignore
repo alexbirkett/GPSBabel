@@ -2,9 +2,12 @@ cscope.out
 cscope.files
 
 gpsbabel
+gpsbabel.exe
 gpsbabel.fo
+gpsbabel.html
 gpsbabel.pdf
 gpsbabel.spec
+
 readme.html
 
 Makefile
