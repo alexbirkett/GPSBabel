@@ -25,6 +25,7 @@
 #include "jeeps/gps.h"
 #include "garmin_tables.h"
 #include "garmin_fs.h"
+#include "garmin_device_xml.h"
 
 #define SOON 1
 
@@ -43,8 +44,8 @@ static char *snlen = NULL;
 static char *snwhiteopt = NULL;
 static char *deficon = NULL;
 static char *category = NULL;
-static char *categorybitsopt = NULL;
-static int categorybits;
+
+static ff_vecs_t *gpx_vec;
 
 #define MILITANT_VALID_WAYPT_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
@@ -66,8 +67,6 @@ arglist_t garmin_args[] = {
 		NULL, ARGTYPE_BOOL, ARG_NOMINMAX},
 	{ "category", &category, "Category number to use for written waypoints", 
 		NULL, ARGTYPE_INT, "1", "16"},
-	{ "bitscategory", &categorybitsopt, "Bitmap of categories", 
-		NULL, ARGTYPE_INT, "1", "65535"},
 	ARG_TERMINATOR
 };
 
@@ -106,10 +105,6 @@ rw_init(const char *fname)
 	if (resettime) {
 		GPS_Command_Send_Time(fname, current_time());
 		return;
-	}
-
-	if (categorybitsopt) {
-		categorybits = strtol(categorybitsopt, NULL, 0);
 	}
 
         if (GPS_Init(fname) < 0) {
@@ -240,8 +235,20 @@ rw_init(const char *fname)
 
 	if (receiver_charset)
 		cet_convert_init(receiver_charset, 1);
+}
 
-
+static void
+rd_init(const char *fname)
+{
+	if (setjmp(gdx_jmp_buf)) {
+		char *vec_opts = NULL;
+		const gdx_info *gi = gdx_get_info();
+		gpx_vec = find_vec("gpx", &vec_opts);
+		gpx_vec->rd_init(gi->from_device.canon);
+	} else {
+		gpx_vec = NULL;
+		rw_init(fname);
+	}
 }
 
 static void
@@ -275,8 +282,6 @@ waypt_read(void)
 		wpt->latitude = gps_save_lat;
 		wpt->longitude = gps_save_lon;
 		wpt->shortname = xstrdup("Position");
-		if (gps_save_time)
-			wpt->creation_time = gps_save_time;
 		waypt_add(wpt);
 		return;
 	}
@@ -329,9 +334,7 @@ waypt_read(void)
 		waypt_add(wpt_tmp);
 		GPS_Way_Del(&way[i]);
 	}
-	if (way) {
-		xfree(way);
-	}
+	xfree(way);
 }
 
 static
@@ -642,6 +645,11 @@ pvt_read(posn_status *posn_status)
 static void
 data_read(void)
 {
+	if (gpx_vec) {
+		gpx_vec->read();
+		return;
+        }
+
 	if (poweroff) {
 		return;
 	}
@@ -819,9 +827,6 @@ xasprintf(&src, "%s %s", &wpt->shortname[2], src);
 		if (category) {
 			way[i]->category = 1 << (atoi(category) - 1);
 		}
-		if (categorybits) {
-			way[i]->category = categorybits;
-		}
 #if SOON
 		garmin_fs_garmin_before_write(wpt, way[i], gps_waypt_type);
 #endif
@@ -998,7 +1003,7 @@ data_write(void)
 ff_vecs_t garmin_vecs = {
 	ff_type_serial,
 	FF_CAP_RW_ALL,
-	rw_init,
+	rd_init,
 	rw_init,
 	rw_deinit,
 	rw_deinit,
